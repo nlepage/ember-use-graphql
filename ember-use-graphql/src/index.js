@@ -1,58 +1,83 @@
 import { registerDestructor } from '@ember/destroyable';
 import { getOwner } from '@ember/owner';
+import Route from '@ember/routing/route';
 import { cached, tracked } from '@glimmer/tracking';
 
 export function useQuery(context, query, variables) {
-  return new QueryResult(new Query(context, query, variables));
+  return new QueryResult(
+    context instanceof Route
+      ? new RouteQuery(context, query, variables)
+      : new DestroyableQuery(context, query, variables),
+  );
 }
 
 class Query {
-  #context;
-  #query;
-  #variables;
-  #observableQuery;
-  #subscription;
-  #trackedResult;
+  context;
+  query;
+  variables;
+  observableQuery;
+  subscription;
+  trackedResult;
 
   constructor(context, query, variables) {
-    this.#context = context;
-    this.#query = query;
-    this.#variables = variables;
-    this.#trackedResult = new TrackedResult();
+    this.context = context;
+    this.query = query;
+    this.variables = variables;
+    this.trackedResult = new TrackedResult();
   }
 
   @cached
   get result() {
-    if (this.#observableQuery) {
-      this.#observableQuery.refetch(this.#variables());
-
-      return this.#trackedResult;
+    if (this.observableQuery) {
+      this.observableQuery.refetch(this.variables());
+    } else {
+      this.subscribe();
     }
 
-    const owner = getOwner(this.#context);
+    return this.trackedResult;
+  }
+
+  subscribe() {
+    const owner = getOwner(this.context);
     if (!owner) throw new TypeError('FIXME');
 
     const client = owner.lookup('apollo:default');
 
-    this.#observableQuery = client.watchQuery({
-      ...this.#query,
+    this.observableQuery = client.watchQuery({
+      ...this.query,
       variables: {
-        ...this.#query.variables,
-        ...this.#variables(),
+        ...this.query.variables,
+        ...this.variables(),
       },
     });
 
-    this.#trackedResult.result = this.#observableQuery.getCurrentResult();
+    this.trackedResult.result = this.observableQuery.getCurrentResult();
 
-    this.#subscription = this.#observableQuery.subscribe((result) => {
-      this.#trackedResult.result = result;
+    this.subscription = this.observableQuery.subscribe((result) => {
+      this.trackedResult.result = result;
     });
+  }
 
-    registerDestructor(this.#context, () => {
-      this.#subscription.unsubscribe();
+  unsubscribe() {
+    this.subscription.unsubscribe();
+  }
+}
+
+class DestroyableQuery extends Query {
+  constructor(...args) {
+    super(...args);
+
+    registerDestructor(this.context, () => {
+      this.unsubscribe();
     });
+  }
+}
 
-    return this.#trackedResult;
+class RouteQuery extends Query {
+  constructor(...args) {
+    super(...args);
+
+    this.context.on('deactivate', this, this.unsubscribe);
   }
 }
 
@@ -82,4 +107,6 @@ class QueryResult {
   get loading() {
     return this.#query.result.loading;
   }
+
+  // FIXME add other fields
 }
