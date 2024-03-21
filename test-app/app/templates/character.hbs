@@ -1,6 +1,9 @@
 {{page-title this.model.data.character.name}}
 
-<Character
-  @character={{this.model.data.character}}
-  @loading={{this.model.loading}}
-/>
+{{#if this.model.loading}}
+  Loading...
+{{else}}
+  <Character
+    @character={{this.model.data.character}}
+  />
+{{/if}}

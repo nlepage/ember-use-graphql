@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
 import { useQuery } from 'ember-use-graphql';
+
 import { graphql } from '../gql';
 
 export default class Characters extends Component {

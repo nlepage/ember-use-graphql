@@ -1,5 +1,6 @@
 import Route from '@ember/routing/route';
 import { useQuery } from 'ember-use-graphql';
+
 import { graphql } from '../gql';
 
 export default class CharacterRoute extends Route {
@@ -7,16 +8,12 @@ export default class CharacterRoute extends Route {
     return useQuery(
       this,
       {
-        query: graphql(/* GraphQL */ `
+        query: graphql(`
           query Character($characterId: ID!) {
             character(id: $characterId) {
               id
               name
-              image
-              gender
-              type
-              status
-              species
+              ...Character
             }
           }
         `),
