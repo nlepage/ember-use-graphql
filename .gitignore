@@ -1,0 +1,16 @@
+# dependencies
+node_modules/
+
+# misc
+.env*
+.pnp*
+.pnpm-debug.log
+.sass-cache
+.eslintcache
+coverage/
+
+# ember-try
+/.node_modules.ember-try/
+/package.json.ember-try
+/pnpm-lock.ember-try.yaml
+

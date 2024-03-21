@@ -1,0 +1,18 @@
+<h1>Characters</h1>
+<p>
+  <label for="characters-query">Search:</label>
+  <Input id="characters-query" @type="text" @value={{this.query}} />
+</p>
+{{#if this.characters.loading}}
+  <p>Loading...</p>
+{{else}}
+  <ul>
+    {{#each this.characters.data.characters.results as |character|}}
+      <li>
+        <LinkTo @route="character" @model={{character.id}}>
+          {{character.name}}
+        </LinkTo>
+      </li>
+    {{/each}}
+  </ul>
+{{/if}}

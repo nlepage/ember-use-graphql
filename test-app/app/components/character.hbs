@@ -1,0 +1,12 @@
+{{#if @loading}}
+  <p>Loading...</p>
+{{else}}
+  <h1>
+    {{@character.name}} character
+  </h1>
+  <p><img src={{@character.image}} alt={{concat "Picture of " @character.name}}></p>
+  <p>Gender: {{@character.gender}}</p>
+  <p>Type: {{@character.type}}</p>
+  <p>Status: {{@character.status}}</p>
+  <p>Species: {{@character.species}}</p>
+{{/if}}
