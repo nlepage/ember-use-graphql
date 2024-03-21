@@ -11,3 +11,6 @@
 
 # ember-try
 /.node_modules.ember-try/
+
+# graphql-codegen files
+/app/gql/

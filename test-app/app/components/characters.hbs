@@ -3,11 +3,11 @@
   <label for="characters-query">Search:</label>
   <Input id="characters-query" @type="text" @value={{this.query}} />
 </p>
-{{#if this.characters.loading}}
+{{#if this.loading}}
   <p>Loading...</p>
 {{else}}
   <ul>
-    {{#each this.characters.data.characters.results as |character|}}
+    {{#each this.characters as |character|}}
       <li>
         <LinkTo @route="character" @model={{character.id}}>
           {{character.name}}

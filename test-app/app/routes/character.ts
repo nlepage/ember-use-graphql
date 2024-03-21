@@ -1,13 +1,13 @@
 import Route from '@ember/routing/route';
-import { gql } from 'graphql-tag';
 import { useQuery } from 'ember-use-graphql';
+import { graphql } from '../gql';
 
 export default class CharacterRoute extends Route {
-  model(params: Record<string, string>) {
+  model(params: { character_id: string }) {
     return useQuery(
       this,
       {
-        query: gql`
+        query: graphql(/* GraphQL */ `
           query Character($characterId: ID!) {
             character(id: $characterId) {
               id
@@ -19,10 +19,10 @@ export default class CharacterRoute extends Route {
               species
             }
           }
-        `,
+        `),
       },
       () => ({
-        characterId: params['character_id'],
+        characterId: params.character_id,
       }),
     );
   }
