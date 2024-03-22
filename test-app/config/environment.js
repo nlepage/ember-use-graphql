@@ -41,7 +41,8 @@ module.exports = function (environment) {
   }
 
   if (environment === 'production') {
-    // here you can enable a production-specific feature
+    ENV.rootURL = process.env.ROOT_URL;
+    ENV.locationType = process.env.LOCATION_TYPE;
   }
 
   return ENV;

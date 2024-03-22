@@ -1,0 +1,59 @@
+name: Pages
+on:
+  push:
+    branches:
+      - "main"
+
+concurrency:
+  group: pages-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ref
+        uses: actions/checkout@v4
+        with:
+          path: ref
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+          cache-dependency-path: 'ref/pnpm-lock.yaml'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: ref
+
+      - name: Build test-app
+        run: pnpm build
+        working-directory: ref/test-app
+        env:
+          ROOT_URL: '/ember-use-graphql/test-app/'
+          LOCATION_TYPE: hash
+
+      - name: Checkout pages
+        uses: actions/checkout@v4
+        with:
+          ref: pages
+          path: pages
+
+      - name: Commit and push pages
+        run: |
+          dir=$(basename ${{github.ref}})
+          rm -rf test-app
+          mkdir test-app
+          mv ../ref/test-app/dist/* test-app
+          git add .
+          git diff --staged --quiet --exit-code && exit # no changes
+          git config user.name "Nicolas Lepage (actions)"
+          git config user.email 19571875+nlepage@users.noreply.github.com
+          git commit --amend --no-edit
+          git push --force-with-lease
+        working-directory: pages
