@@ -14,7 +14,7 @@ export default class Characters extends Component {
         characters(filter: $filter) {
           results {
             id
-            name
+            ...CharacterPreview
           }
         }
       }

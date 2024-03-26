@@ -1,1 +1,29 @@
-/* Ember supports plain CSS out of the box. More info: https://cli.emberjs.com/release/advanced-use/stylesheets/ */
+nav ul {
+  display: flex;
+  gap: 2em;
+  list-style-type: none;
+}
+
+.characters-character-preview {
+  display: inline-block;
+  margin: 1em;
+  text-align: center;
+}
+
+.characters-character-preview > p {
+  margin: 0;
+}
+
+.index {
+  display: flex;
+  flex-direction: row;
+}
+
+.index-character-preview {
+  margin: 1em;
+  text-align: center;
+}
+
+.index-character-preview > p {
+  margin: 0;
+}

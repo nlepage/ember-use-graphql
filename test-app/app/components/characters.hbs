@@ -8,10 +8,8 @@
 {{else}}
   <ul>
     {{#each this.characters as |character|}}
-      <li>
-        <LinkTo @route="character" @model={{character.id}}>
-          {{character.name}}
-        </LinkTo>
+      <li class="characters-character-preview">
+        <CharacterPreview @character={{character}} />
       </li>
     {{/each}}
   </ul>

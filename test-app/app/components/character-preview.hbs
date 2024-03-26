@@ -1,0 +1,13 @@
+<p>
+  <img
+    src={{@character.image}}
+    alt={{concat "Picture of " @character.name}}
+    width="200"
+    height="200"
+  >
+</p>
+<p>
+  <LinkTo @route="character" @model={{@character.id}}>
+    {{@character.name}}
+  </LinkTo>
+</p>

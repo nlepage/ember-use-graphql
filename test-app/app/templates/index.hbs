@@ -1,3 +1,12 @@
 {{page-title "Welcome"}}
 
 <h1>Welcome</h1>
+
+<div class="index">
+  <div class="index-character-preview">
+    <CharacterPreview @character={{this.model.data.rick}} />
+  </div>
+  <div class="index-character-preview">
+    <CharacterPreview @character={{this.model.data.morty}} />
+  </div>
+</div>
