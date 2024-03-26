@@ -18,15 +18,26 @@ export function useQuery(context, query, options) {
 }
 
 class Query {
-  context;
+  client;
   query;
   variables;
   observableQuery;
   subscription;
   trackedResult;
 
-  constructor(context, query, { variables, ...options }) {
-    this.context = context;
+  constructor(context, query, { client, variables, ...options }) {
+    const owner = getOwner(context);
+    if (!owner) {
+      throw new TypeError('could not find owner of given context');
+    }
+
+    this.client = owner.lookup(`apollo:${client ?? 'default'}`);
+    if (!this.client) {
+      throw new TypeError(
+        `could not find client for name "apollo:${client ?? 'default'}"`,
+      );
+    }
+
     this.query = { ...options, query };
     this.variables = variables;
     this.trackedResult = new TrackedResult();
@@ -44,12 +55,7 @@ class Query {
   }
 
   subscribe() {
-    const owner = getOwner(this.context);
-    if (!owner) throw new TypeError('FIXME');
-
-    const client = owner.lookup('apollo:default');
-
-    this.observableQuery = client.watchQuery({
+    this.observableQuery = this.client.watchQuery({
       ...this.query,
       variables: {
         ...this.query.variables,

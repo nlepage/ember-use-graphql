@@ -11,6 +11,7 @@ export function useQuery<TData = any, TVariables extends OperationVariables = Op
 
 export type QueryOptions<TVariables extends OperationVariables = OperationVariables, TData = any> =
   Omit<WatchQueryOptions<TVariables, TData>, 'query' | 'variables'> & {
+    client?: string
     variables: TVariables | (() => TVariables)
   };
 
