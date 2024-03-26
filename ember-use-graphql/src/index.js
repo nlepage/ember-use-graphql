@@ -3,8 +3,8 @@ import { getOwner } from '@ember/owner';
 import Route from '@ember/routing/route';
 import { cached, tracked } from '@glimmer/tracking';
 
-export function useQuery(context, query, variables) {
-  const queryObject = new Query(context, query, variables);
+export function useQuery(context, query, options) {
+  const queryObject = new Query(context, query, options);
 
   if (context instanceof Route) {
     context.on('deactivate', queryObject, queryObject.unsubscribe);
@@ -25,9 +25,9 @@ class Query {
   subscription;
   trackedResult;
 
-  constructor(context, query, variables) {
+  constructor(context, query, { variables, ...options }) {
     this.context = context;
-    this.query = query;
+    this.query = { ...options, query };
     this.variables = variables;
     this.trackedResult = new TrackedResult();
 
@@ -94,9 +94,23 @@ class QueryResult {
     return this.#query.result.data;
   }
 
+  get errors() {
+    return this.#query.result.errors;
+  }
+
+  get error() {
+    return this.#query.result.error;
+  }
+
   get loading() {
     return this.#query.result.loading;
   }
 
-  // FIXME add other fields
+  get networkStatus() {
+    return this.#query.result.networkStatus;
+  }
+
+  get partial() {
+    return this.#query.result.partial;
+  }
 }

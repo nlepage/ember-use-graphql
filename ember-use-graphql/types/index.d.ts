@@ -1,7 +1,17 @@
-import type { ApolloQueryResult, OperationVariables, WatchQueryOptions } from '@apollo/client/core';
+import type { ApolloQueryResult, WatchQueryOptions } from '@apollo/client/core';
+import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import type { DocumentNode } from 'graphql';
 
-export function useQuery<T = any, TVariables extends OperationVariables = OperationVariables>(
+
+export function useQuery<TData = any, TVariables extends OperationVariables = OperationVariables>(
   context: object,
-  query: WatchQueryOptions<TVariables, T>,
-  variables: TVariables | (() => TVariables),
-): ApolloQueryResult<T>
+  query: DocumentNode | TypedDocumentNode<TData, TVariables>,
+  options: QueryOptions<TVariables, TData>,
+): ApolloQueryResult<TData>;
+
+export type QueryOptions<TVariables extends OperationVariables = OperationVariables, TData = any> =
+  Omit<WatchQueryOptions<TVariables, TData>, 'query' | 'variables'> & {
+    variables: TVariables | (() => TVariables)
+  };
+
+export type OperationVariables = Record<string, any>;

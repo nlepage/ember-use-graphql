@@ -7,20 +7,20 @@ export default class CharacterRoute extends Route {
   model(params: { character_id: string }) {
     return useQuery(
       this,
-      {
-        query: graphql(`
-          query Character($characterId: ID!) {
-            character(id: $characterId) {
-              id
-              name
-              ...Character
-              ...CharacterEpisodes
-            }
+      graphql(`
+        query Character($characterId: ID!) {
+          character(id: $characterId) {
+            id
+            name
+            ...Character
+            ...CharacterEpisodes
           }
-        `),
-      },
+        }
+      `),
       {
-        characterId: params.character_id,
+        variables: {
+          characterId: params.character_id,
+        },
       },
     );
   }

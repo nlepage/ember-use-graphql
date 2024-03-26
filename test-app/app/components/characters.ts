@@ -9,23 +9,23 @@ export default class Characters extends Component {
 
   #characters = useQuery(
     this,
-    {
-      query: graphql(/* GraphQL */ `
-        query Characters($filter: FilterCharacter) {
-          characters(filter: $filter) {
-            results {
-              id
-              name
-            }
+    graphql(/* GraphQL */ `
+      query Characters($filter: FilterCharacter) {
+        characters(filter: $filter) {
+          results {
+            id
+            name
           }
         }
-      `),
+      }
+    `),
+    {
+      variables: () => ({
+        filter: {
+          name: this.query,
+        },
+      }),
     },
-    () => ({
-      filter: {
-        name: this.query,
-      },
-    }),
   );
 
   get characters() {
