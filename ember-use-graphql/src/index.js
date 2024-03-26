@@ -4,11 +4,17 @@ import Route from '@ember/routing/route';
 import { cached, tracked } from '@glimmer/tracking';
 
 export function useQuery(context, query, variables) {
-  return new QueryResult(
-    context instanceof Route
-      ? new RouteQuery(context, query, variables)
-      : new DestroyableQuery(context, query, variables),
-  );
+  const queryObject = new Query(context, query, variables);
+
+  if (context instanceof Route) {
+    context.on('deactivate', queryObject, queryObject.unsubscribe);
+  } else {
+    registerDestructor(context, () => {
+      queryObject.unsubscribe();
+    });
+  }
+
+  return new QueryResult(queryObject);
 }
 
 class Query {
@@ -24,15 +30,15 @@ class Query {
     this.query = query;
     this.variables = variables;
     this.trackedResult = new TrackedResult();
+
+    this.subscribe();
   }
 
   @cached
   get result() {
-    if (this.observableQuery) {
-      this.observableQuery.refetch(this.variables());
-    } else {
-      this.subscribe();
-    }
+    this.observableQuery.refetch(
+      typeof this.variables === 'function' ? this.variables() : this.variables,
+    );
 
     return this.trackedResult;
   }
@@ -47,7 +53,9 @@ class Query {
       ...this.query,
       variables: {
         ...this.query.variables,
-        ...this.variables(),
+        ...(typeof this.variables === 'function'
+          ? this.variables()
+          : this.variables),
       },
     });
 
@@ -60,24 +68,6 @@ class Query {
 
   unsubscribe() {
     this.subscription.unsubscribe();
-  }
-}
-
-class DestroyableQuery extends Query {
-  constructor(...args) {
-    super(...args);
-
-    registerDestructor(this.context, () => {
-      this.unsubscribe();
-    });
-  }
-}
-
-class RouteQuery extends Query {
-  constructor(...args) {
-    super(...args);
-
-    this.context.on('deactivate', this, this.unsubscribe);
   }
 }
 

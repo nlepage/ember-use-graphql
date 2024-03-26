@@ -18,9 +18,9 @@ export default class CharacterRoute extends Route {
           }
         `),
       },
-      () => ({
+      {
         characterId: params.character_id,
-      }),
+      },
     );
   }
 }

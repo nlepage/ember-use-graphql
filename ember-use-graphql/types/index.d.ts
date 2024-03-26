@@ -3,5 +3,5 @@ import type { ApolloQueryResult, OperationVariables, WatchQueryOptions } from '@
 export function useQuery<T = any, TVariables extends OperationVariables = OperationVariables>(
   context: object,
   query: WatchQueryOptions<TVariables, T>,
-  variables: () => TVariables,
+  variables: TVariables | (() => TVariables),
 ): ApolloQueryResult<T>
