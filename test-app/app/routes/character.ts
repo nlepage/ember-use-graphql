@@ -14,6 +14,7 @@ export default class CharacterRoute extends Route {
               id
               name
               ...Character
+              ...CharacterEpisodes
             }
           }
         `),
