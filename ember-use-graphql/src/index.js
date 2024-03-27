@@ -25,7 +25,7 @@ class Query {
   subscription;
   trackedResult;
 
-  constructor(context, query, { client, variables, ...options }) {
+  constructor(context, query, { client, variables, ...options } = {}) {
     const owner = getOwner(context);
     if (!owner) {
       throw new TypeError('could not find owner of given context');

@@ -1,21 +1,110 @@
 # ember-use-graphql
 
-Modern Ember GraphQL integration.
-
-## Compatibility
-
-- Ember.js v4.12 or above
-- Embroider or ember-auto-import v2
+Modern Ember GraphQL integration, TypeScript and [GraphQL-Codegen](https://the-guild.dev/graphql/codegen) friendly.
 
 ## Installation
 
+Using npm:
+
 ```
-ember install ember-use-graphql
+npm install -D ember-use-graphql graphql @apollo/client graphql-tag
+```
+
+Using yarn:
+
+```
+yarn add -D ember-use-graphql graphql @apollo/client graphql-tag
+```
+
+Using pnpm:
+
+```
+pnpm add -D ember-use-graphql graphql @apollo/client graphql-tag
 ```
 
 ## Usage
 
-[Longer description of how to use the addon in apps.]
+### Provide the Apollo client
+
+In order to provide an Apollo client to be used by ember-use-graphql, create an [application initializer](https://guides.emberjs.com/release/applications/initializers/#toc_application-initializers) in your `app/initializers` directory:
+
+```js
+// app/initializers/apollo.js
+
+import { ApolloClient, InMemoryCache } from '@apollo/client/core';
+
+export function initialize(application) {
+  const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: 'https://example.com/graphql',
+  });
+
+  application.register('apollo:default', client, { instantiate: false });
+}
+
+export default {
+  name: 'apollo',
+  initialize,
+};
+```
+
+In this example the Apollo client is registered under the name `apollo:default`, and will then be the default client for performing GraphQL operations, [unless specified otherwise](#use-several-apollo-clients).
+
+## Advanced usage
+
+### Use several Apollo clients
+
+If your application needs to use several Apollo clients, you will need to register these under different names in the application initializer:
+
+```js
+// app/initializers/apollo.js
+
+import { ApolloClient, InMemoryCache } from '@apollo/client/core';
+
+export function initialize(application) {
+  const defaultClient = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: 'https://api.example.com/graphql',
+  });
+
+  application.register('apollo:default', defaultClient, { instantiate: false });
+
+  const alternateClient = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: 'https://private-api.example.com/graphql',
+  });
+
+  application.register('apollo:alternate', alternateClient, { instantiate: false });
+}
+
+export default {
+  name: 'apollo',
+  initialize,
+};
+```
+
+Then you must specify which client should be used when querying:
+
+```js
+// app/components/example.js
+
+export default class ExampleComponent extends Component {
+  // no client specified, will use defaultClient
+  firstQuery = useQuery(this, gql`...`, {
+    variables: {
+      // ...
+    },
+  });
+
+  // will use alternateClient
+  secondQuery = useQuery(this, gql`...`, {
+    client: 'alternate',
+    variables: {
+      // ...
+    },
+  });
+}
+```
 
 ## Common problems
 
@@ -28,6 +117,11 @@ To workaround this error, add the following line in the `types/global.d.ts` file
 ```ts
 import '@apollo/client/core';
 ```
+
+## Compatibility
+
+- Ember.js v4.12 or above
+- Embroider or ember-auto-import v2
 
 ## Contributing
 
