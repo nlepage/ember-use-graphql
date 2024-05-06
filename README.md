@@ -50,6 +50,18 @@ export default {
 
 In this example the Apollo client is registered under the name `apollo:default`, and will then be the default client for performing GraphQL operations, [unless specified otherwise](#use-several-apollo-clients).
 
+### Queries
+
+Queries can be performed in Components or Routes' models using ember-use-graphql's `useQuery` function.
+
+The results returned by `useQuery` are reactive, and will keep up to date with Apollo client's cache.
+
+ember-use-graphql manages the lifecycle of queries by listening to the Component/Route's events, DO NOT call `useQuery` in Controllers or outside of the Route's model method.
+
+#### Component queries
+
+README
+
 ## Advanced usage
 
 ### Use several Apollo clients
