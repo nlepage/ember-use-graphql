@@ -4,7 +4,7 @@ import type Application from '@ember/application';
 export function initialize(application: Application) {
   const defaultClient = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: 'https://rickandmortyapi.com/graphql',
+    uri: './graphql',
   });
 
   application.register('apollo:default', defaultClient, { instantiate: false });

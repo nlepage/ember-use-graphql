@@ -16,6 +16,9 @@
   <body>
     {{content-for "body"}}
 
+    <script type="module">
+      navigator.serviceWorker.register('{{rootURL}}graphql-sw.js');
+    </script>
     <script src="{{rootURL}}assets/vendor.js"></script>
     <script src="{{rootURL}}assets/test-app.js"></script>
 
